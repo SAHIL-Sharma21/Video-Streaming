@@ -72,7 +72,36 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 } //this function will return true or false
 
 
+//writing method to generate jwt >> Access token
+userSchema.methods.generateAccessToken = function () {
+    // writing our logic to generate token
+    return jwt.sign(
+        //{payload/data} , access token, {expires IN}
+        {
+            _id: this._id,
+            email: this.email,
+            userName: this.userName,
+            fullname: this.fullname
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+        }
+    );
+}
 
+//generating refresh token jo hm database mei store krenge
+userSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(
+        {
+            _id: this._id,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
+    );
+}
 
 
 export const User = mongoose.model('User', userSchema);
