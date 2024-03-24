@@ -3,7 +3,9 @@
 
 //we are making 2  methos to do it we can use anyone depending upon our usecase
 const asyncHandler = (requsthandler) => {
-    (req, res, next) => {
+    //here we have to retun as callback function if we not then it will give error
+    return (req, res, next) => {
+        //we are invoking the promise here
         Promise.resolve(requsthandler(req, res, next)).catch((err) => next(err));
     }
 }

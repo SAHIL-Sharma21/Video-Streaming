@@ -3,6 +3,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser'; //importing cookieparser here 
 import cors from 'cors'; //importing cors 
 
+
 const app = express();
 
 //using cors here using middleares >> and we are configuring cors by passing object to it and giving it origin in .env CORS_ORIGN=* is allowing request from anywhere which is not a god practice.
@@ -24,8 +25,19 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 
-app.get("/", (req, res) => {
-    res.send("Hello backend");
-});
+
+//writing our routes here
+//segreting the code importing the useerrouter here
+import userRouter from './routes/user.route.js';
+
+//routes decleration >> best practice is to use middleware to use router
+// app.use("/users", userRouter); // we only need to write this once then we can use our router. this is basic but we are writing our api jo we need to write api
+//the url will look like this-->> http://localhost:8080/users/register
+app.use("/api/v1/users", userRouter); //this is as standard practice used in industires
+//url will look like this -> http://localhost:8080/api/v1/users/register 
+
+// app.get("/", (req, res) => {
+//     res.send("Hello backend");
+// });
 
 export { app }
