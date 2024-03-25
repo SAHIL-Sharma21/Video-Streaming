@@ -30,6 +30,7 @@ app.use(cookieParser());
 //segreting the code importing the useerrouter here
 import userRouter from './routes/user.route.js';
 
+//router ko hm bahar nikl kr le gye hia toh hm log middleware ka use kr rahe hai app.use(route, router import varible);
 //routes decleration >> best practice is to use middleware to use router
 // app.use("/users", userRouter); // we only need to write this once then we can use our router. this is basic but we are writing our api jo we need to write api
 //the url will look like this-->> http://localhost:8080/users/register
