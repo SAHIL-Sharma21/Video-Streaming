@@ -22,8 +22,8 @@ const registerUser = asyncHandler(async (req, res) => {
     //taking user details from the request parameter
     //destructing the userDetails
     //hmlog bs data handle kr skte hai idhr file handle nhi kr skte
-    const { userName, email, fullName, password } = req.body; //we are getting the reponse and data
-    console.log("email: ", email);
+    const { userName, email, fullname, password } = req.body; //we are getting the reponse and data
+    // console.log("email: ", email);
 
     //now we check for the validation --> but this is how begginer will do
     // if (fullName === "") {
@@ -32,14 +32,14 @@ const registerUser = asyncHandler(async (req, res) => {
     // }
     //how professional write if condition on all the fields to check if the field is emoty or not
     if (
-        [fullName, userName, email, password].some((field) => field?.trim() === "") //saari filed trim krne ke baad agr woh empty hai to teru
+        [fullname, userName, email, password].some((field) => field?.trim() === "") //saari filed trim krne ke baad agr woh empty hai to teru
     ) {
         throw new ApiError(400, "All fields are required")
     }
 
     //now we are checking if the user already exist or not so we will ask from User model 
     //below we are asking form the user model which is build by mongoose which is taking to our database and it will return wheter user is already existed
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({ //idr await use nhi krra tha
         //for checking userName and email this is or query
         $or: [{ userName }, { email }]
     });
@@ -52,7 +52,15 @@ const registerUser = asyncHandler(async (req, res) => {
     //multer wil give access to files >> we will check if files is uploaded
     //we are taking file path from the server through multer
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    // const coverImageLocalPath = req.files?.coverImage[0]?.path;
+
+    //classic way to check if coverImage is present or not
+    let coverImageLocalPath;
+    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+        coverImageLocalPath = req.files.coverImage[0].path;
+    }
+    console.log(req.files.coverImage);
+
 
     if (!avatarLocalPath) {
         throw new ApiError(400, "avatar file is required.");
@@ -72,8 +80,9 @@ const registerUser = asyncHandler(async (req, res) => {
     //create the object and make the entry in Db
     const user = await User.create({
         userName: userName.toLowerCase(),
-        fullName,
+        fullname,
         password,
+        email,
         avatar: avatar.url,
         coverImage: coverImage?.url || "", //agr coverImage hai to add krdo wrna yeh field empty chod do
     });

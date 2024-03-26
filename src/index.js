@@ -5,7 +5,7 @@ import dotenv from 'dotenv'; //using import statement
 import connectDB from './db/index.js'
 import { app } from './app.js';
 dotenv.config({
-    path: './env'
+    path: './.env'
 });
 
 //writing promise method if database is connected then our app will listen on some port ortherwise throw error
