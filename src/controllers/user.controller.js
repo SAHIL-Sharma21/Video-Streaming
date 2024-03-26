@@ -3,6 +3,8 @@
 import { asyncHandler } from '../utils/asyncHandler.js'
 import { ApiError } from '../utils/ApiError.js'
 import { User } from '../models/user.model.js'
+import { uploadOnCloudinary } from '../utils/cloudnaryService.js'
+import { ApiResponse } from '../utils/ApiResponse.js'
 
 //making method to register user
 const registerUser = asyncHandler(async (req, res) => {
@@ -46,6 +48,50 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User already exist.");
     }
 
+
+    //multer wil give access to files >> we will check if files is uploaded
+    //we are taking file path from the server through multer
+    const avatarLocalPath = req.files?.avatar[0]?.path;
+    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+
+    if (!avatarLocalPath) {
+        throw new ApiError(400, "avatar file is required.");
+    }
+
+    //next step is to upload file on cloudnary
+    //uploading avatar and coverImage to cloudinary
+    //this operation wil take time and we dont want the control flow move forward
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
+    //checking if avatar is ther if not then database will give error.
+    if (!avatar) {
+        throw new ApiError(400, "Avatar file is required.");
+    }
+
+    //create the object and make the entry in Db
+    const user = await User.create({
+        userName: userName.toLowerCase(),
+        fullName,
+        password,
+        avatar: avatar.url,
+        coverImage: coverImage?.url || "", //agr coverImage hai to add krdo wrna yeh field empty chod do
+    });
+
+    //we will check if the user is created or not we will ask from DB using User model
+    //mongoDb automatically creeate _id field in the model/user object and we are removing password by select method
+    const createdUser = await User.findById(user._id).select(
+        "-password -refreshToken" //by default yeh sb selected hota hai pr hm - sign lgga ke ensure krenge ki hme password nhi chaiye
+    );
+
+    if (!createdUser) {
+        throw new ApiError(500, "something went wrong While registering the user.");
+    }
+
+    //now everything is done now we will return a response
+    return res.status(201).json(
+        new ApiResponse(200, createdUser, "User registered successfully")
+    )
 
 });
 
