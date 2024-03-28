@@ -1,12 +1,13 @@
 //making auth middleware for logging out the user
 //it will only do if user is there or not
 
-import { User } from "../models/user.model";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
+import { User } from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import Jwt from "jsonwebtoken";
 
-export const verifyJWT = asyncHandler(async (req, res, next) => {
+//if res is not in used then we can put _ in place of that --> production grade application
+export const verifyJWT = asyncHandler(async (req, _, next) => {
 
     try {
         //request has access to cookies due to middleware
