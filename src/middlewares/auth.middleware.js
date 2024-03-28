@@ -21,6 +21,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
         }
 
         //verifying token from the jwt if the token is correct or not 
+        //this decodedToken is is a object which will contain user information
         const decodedToken = Jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
         //id hme decodedToken se milegi kyki hmne usermodel mei generateAccessToken mei _id ek property diya hua hai.

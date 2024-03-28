@@ -4,7 +4,7 @@
 import { Router } from "express";
 import { registerUser } from '../controllers/user.controller.js'
 import { upload } from '../middlewares/multer.middleware.js'; //importing multer middleware 
-import { loginUser, logoutUser } from '../controllers/user.login.controller.js'
+import { loginUser, logoutUser, refreshAccessToken } from '../controllers/user.login.controller.js'
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 
 const router = Router();
@@ -28,7 +28,14 @@ router.route("/register").post(
 router.route("/login").post(loginUser);
 
 //secured route --> using custom middleware
-router.route("/logout").post(verifyJWT, logoutUser)
+router.route("/logout").post(verifyJWT, logoutUser);
+//route to refresh a access token and refresh token
+router.route("/refresh-token").post(refreshAccessToken);
+
+
+
+
+
 
 
 //exporting this router as a default

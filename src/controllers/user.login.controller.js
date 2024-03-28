@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
+import jwt from 'jsonwebtoken'
 
 
 //making one method to generate access token and refresh token
@@ -79,6 +80,7 @@ const loginUser = asyncHandler(async (req, res) => {
     //calling method to generate token
     const { accessToken, refreshToken } = await accessAndRefreshToken(user._id);
 
+    //below varibale we are sending as response to user as loggedInUser is a object
     const loggedInUser = await User.findById(user._id).select(" -password  -refreshToken"); //password and refresh token field nhi chaiye
 
     //sedning cookie --> desigining cookies
@@ -141,10 +143,67 @@ const logoutUser = asyncHandler(async (req, res) => {
     //     .removeHeader("accessToken")
     //     .removeHeader("refreshToken")
     //     .json(new ApiResponse(200, {}, "user Logged out."))
+});
 
+//making new endpoint where user can refresh/generate new accessToken and refresh token
+const refreshAccessToken = asyncHandler(async (req, res) => {
+    //client will have refresh Token and we will get that refresh token from cookies
+    //we will refreshToken from cookies or someone is using mobile then it wil come from body.
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
+    //if refreshToken is not there 
+    if (!incomingRefreshToken) {
+        throw new ApiError(401, "Unauthorized Request");
+    }
 
+    try {
+        //if there is token then we will verify
+        //we always need decodedToken when we verfify the user
+        const decodedToken = jwt.verify(
+            incomingRefreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        );
+
+        //we alwyas need decoded token then it will decode the information and it will contains user Object which is stored in DB
+        //we are making DB query to find user by decodetoken and it will contain _id
+        const user = await User.findById(decodedToken?._id);
+
+        if (!user) {
+            throw new ApiError(401, "Invalid Refresh Token");
+        }
+
+        //now we will check the user refrehToken which is stored in DB and incomingRefereshToken then we will give access 
+        if (incomingRefreshToken !== user?.refreshToken) {
+            throw new ApiError(401, "Refresh Token is expired or used");
+        }
+
+        //now all verification done then we will generate new token
+        //making option
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+
+        const { accessToken, newRefreshToken } = await accessAndRefreshToken(user._id);
+
+        //sending response
+        return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", newRefreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    { accessToken, refreshToken: newRefreshToken },
+                    "Access Token Refreshed."
+                )
+            )
+    } catch (error) {
+        throw new ApiError(401, error?.message || "Invalid Refresh Token.")
+    }
 });
 
 
-export { loginUser, logoutUser };
+
+
+export { loginUser, logoutUser, refreshAccessToken };
