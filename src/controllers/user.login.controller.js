@@ -308,6 +308,41 @@ const updateAvatar = asyncHandler(async (req, res) => {
 });
 
 
+//todo: make function of update coverImage 
+const updateCoverImage = asyncHandler(async (req, res) => {
+    //logic for updatingthe coverImage
+    //getting the path from req.file
+
+    const coverImageLocalPath = req.file?.path;
+
+    if (!coverImageLocalPath) {
+        throw new ApiError(400, "CoverImage is missing.")
+    }
+
+    //if we get the local file path through multer
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
+    if (!coverImage.url) {
+        throw new ApiError(400, "Error while uploading cover Image.")
+    }
+
+    //now will find the user and update the cover image for that user.
+    const user = User.findByIdAndDelete(
+        req.user?._id,
+        {
+            $set: {
+                coverImage: coverImage.url,
+            }
+        },
+        { new: true }
+    ).select(" -password");
+
+    //sending response
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "Cover Imaage updated successfully."))
+});
 
 
-export { loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetails, updateAvatar };
+
+export { loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetails, updateAvatar, updateCoverImage };
