@@ -4,7 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import jwt from 'jsonwebtoken'
-
+import { uploadOnCloudinary } from '../utils/cloudnaryService.js'
 
 //making one method to generate access token and refresh token
 //this userId we will get from the user which we have find from the DB
@@ -204,6 +204,110 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 
+//writing logic for change current password
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+
+    //we will take old password and new password from the body
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    //agr user password change kr paa raha hai toh woh logged in hoga >>> hmne auth middleware banya tha jimse req mei user hai waha se hm user ki id nikal lenge
+    //    req.user?.id //isse current user ki id nikl jayegi
+
+    //finding user
+    const user = await User.findById(req.user?._id);
+    //we are checking that old password is correct to verify the user
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword); //it will true or false
+    //if password corrct nhi hai toh throw kedo error.
+    if (!isPasswordCorrect) {
+        throw new ApiError(400, "Invalid password.")
+    }
+
+    //if we need one extra field to confirm password.
+    // if (newPassword !== confirmPassword) {
+    //     throw new ApiError(400, "Enter the same passwword.")
+    // }
+
+    //ab agr password true hai old password and now we assign new paswword to user model in db
+    user.password = newPassword; //here we have only set the pass word not save it our db
+    await user.save({ validateBeforeSave: false }); //here we are saving the new password in Db.
+
+    //retun the response
+    return res.status(200).json(new ApiResponse(200, {}, "Password Chnaged Successfuly!"))
+
+});
+
+//get current user
+const getCurrentUser = asyncHandler(async (req, res) => {
+    // const user = await User.findById(req.user?._id);
+
+    if (!(req.user?._id)) {
+        throw new ApiError(400, "Invalid user.")
+    }
+
+    return res.status(200).json(new ApiResponse(200, req.user, "Get the user."))
+
+    //this is what hitesh sir wrote
+    // return res.status(200).json(new ApiResponse(200, req.user, "Current user fetched successfully."))
+});
+
+//making  update acount details  for the user
+const updateAccountDetails = asyncHandler(async (req, res) => {
+    const { fullname, email } = req.body;
+
+    if (!fullname || !email) {
+        throw new ApiError(400, "All fields are required.")
+    }
+
+    //finding user to update their fullname and email
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: { //mongodb operator to set.
+                fullname,
+                email: email
+            }
+        },
+        { new: true } //update hone ke baad new user obj return kr deta hai
+    ).select(" -password"); //password nhi bejenge bs wohi -passwprd kr diye
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "Account details updated succesfully."))
+});
+
+//controler for updating avatar we will be usingmulter middleware to upload the file.
+const updateAvatar = asyncHandler(async (req, res) => {
+    //logic for uploading avatar
+    //avvatar can only be updated if the user is loged in
+    //taking local path from the multer middleware we got the access of file from it
+    const avatarLocalPath = req.file?.path;
+    if (!avatarLocalPath) {
+        throw new ApiError(400, "avatar file is missing.")
+    }
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+    if (!avatar.url) {
+        throw new ApiError(400, "Error while uploading on avatar")
+    }
+    //now we find the user and update the object
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                avatar: avatar.url
+            }
+        },
+        { new: true }
+    ).select(" -password");
+
+    //retur the reponse
+    return res
+        .status(200)
+        .json(200, user, "avatar updated succesfuly.")
+});
 
 
-export { loginUser, logoutUser, refreshAccessToken };
+
+
+export { loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetails, updateAvatar };
