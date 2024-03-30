@@ -216,7 +216,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     // console.log(oldPassword);
     //finding user
     const user = await User.findById(req.user?._id);
-    // console.log(user)
+    console.log(user)
     //we are checking that old password is correct to verify the user
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword); //it will true or false
     console.log(isPasswordCorrect);
