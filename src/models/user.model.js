@@ -103,4 +103,5 @@ userSchema.methods.generateRefreshToken = function () {
     );
 }
 
+//this below User will converted to prural and all lowecase in db store like users model in db.
 export const User = mongoose.model('User', userSchema);
