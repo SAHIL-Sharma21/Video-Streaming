@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import jwt from 'jsonwebtoken'
 import { uploadOnCloudinary } from '../utils/cloudnaryService.js'
+import { deleteOldAvatarImage } from '../utils/deleteOldAvatarImage.js';
 
 //making one method to generate access token and refresh token
 //this userId we will get from the user which we have find from the DB
@@ -212,11 +213,13 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
     //agr user password change kr paa raha hai toh woh logged in hoga >>> hmne auth middleware banya tha jimse req mei user hai waha se hm user ki id nikal lenge
     //    req.user?.id //isse current user ki id nikl jayegi
-
+    // console.log(oldPassword);
     //finding user
     const user = await User.findById(req.user?._id);
+    // console.log(user)
     //we are checking that old password is correct to verify the user
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword); //it will true or false
+    console.log(isPasswordCorrect);
     //if password corrct nhi hai toh throw kedo error.
     if (!isPasswordCorrect) {
         throw new ApiError(400, "Invalid password.")
@@ -285,17 +288,22 @@ const updateAvatar = asyncHandler(async (req, res) => {
         throw new ApiError(400, "avatar file is missing.")
     }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const newAvatar = await uploadOnCloudinary(avatarLocalPath);
 
-    if (!avatar.url) {
+    if (!newAvatar.url) {
         throw new ApiError(400, "Error while uploading on avatar")
     }
+
+    //toDo: delete old avatar image.
+    // const oldAvatarImage = req.user?.avatarImage;
+    deleteOldAvatarImage(req.user?._id);
+
     //now we find the user and update the object
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
-                avatar: avatar.url
+                avatar: newAvatar.url,
             }
         },
         { new: true }
@@ -304,7 +312,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
     //retur the reponse
     return res
         .status(200)
-        .json(200, user, "avatar updated succesfuly.")
+        .json(new ApiResponse(200, user, "avatar image updated successfully."));
 });
 
 
