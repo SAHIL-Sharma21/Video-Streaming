@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from '../models/user.model.js'
+import mongoose from "mongoose";
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
 
@@ -90,4 +91,53 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
 });
 
-export { getUserChannelProfile };
+
+//writing one more pipeline for watch history -->> we need to do nested lookup to get owner information
+const getWatchHistory = asyncHandler(async (req, res) => {
+
+    //geting the user from the req
+    // req.user?._id //hmko idr string milta hai pr mongoose behind the scene iss string ko convert kr deta hai mongoDB ke id mei
+    // aggregation ka code directly database se baat krta hai toh hme apni string id ko convert krna padega
+    const user = await User.aggregate([
+        {
+            //getting the user from below pipeline
+            $match: {
+                _id: new Types.ObjectId(req.user._id) //this will convert to mongodb id and will match with our database 
+            } // yaha pr id match ho gya document ke hissab se
+        },
+        //below pipeline mei user collection mei bahut saare video ke id aa gye hai -- >> left join kr diya hai.
+        {
+            $lookup: {
+                from: "videos",
+                localField: "watchHistory",
+                foreignField: "_id",
+                as: "watchHistory",
+                //writing sub-pipeline for gertting the owner document
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner", //this owner is a field to another doc
+                            //writing one more sub pipeline for not showing extra data
+                            pipeline: [ //iss pipeline mei jo bhi project krenge and iska output hamare owner mei aa jayerga
+                                {
+                                    $project: {
+                                        fullname: 1,
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+    ]);
+
+
+
+});
+
+
+export { getUserChannelProfile, getWatchHistory }
