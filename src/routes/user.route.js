@@ -43,7 +43,7 @@ router.route("/update-account").patch(verifyJWT, updateAccountDetails);
 //using multer middleware to upload single file 
 router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateAvatar);
 //making update coverImage route
-router.route("/cover-image").patch(verifyJWT, upload.single("/coverImage"), updateCoverImage);
+router.route("/cover-image").patch(verifyJWT, upload.single("coverImage"), updateCoverImage);
 
 //using params to get username for making route for getinguserProfile
 router.route("/c/:username").get(verifyJWT, getUserChannelProfile);
