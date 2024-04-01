@@ -4,7 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import jwt from 'jsonwebtoken'
-import { uploadOnCloudinary } from '../utils/cloudnaryService.js'
+import { deletedOnCloudinary, uploadOnCloudinary } from '../utils/cloudnaryService.js'
 import { deleteOldAvatarImage } from '../utils/deleteOldAvatarImage.js';
 
 //making one method to generate access token and refresh token
@@ -296,7 +296,10 @@ const updateAvatar = asyncHandler(async (req, res) => {
 
     //toDo: delete old avatar image.
     // const oldAvatarImage = req.user?.avatarImage;
-    deleteOldAvatarImage(req.user?._id);
+    // deleteOldAvatarImage(req.user?._id);
+    const deleteAvatar = await deletedOnCloudinary(req.user?.avatar);
+    //we can ad check here if file is not deleted then don't go forward.
+
 
     //now we find the user and update the object
     const user = await User.findByIdAndUpdate(

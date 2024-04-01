@@ -34,4 +34,21 @@ const uploadOnCloudinary = async (localFilePath) => {
     }
 }
 
-export { uploadOnCloudinary }
+// making method to delete the file from the cloudinary
+const deletedOnCloudinary = async (localFilePath) => {
+
+    try {
+        //iflocal file oath is not present then throw error
+        if (!localFilePath) return null;
+
+        const response = await cloudinary.uploader.destroy(localFilePath, {
+            resource_type: 'auto'
+        });
+        return response;
+    } catch (error) {
+        console.log("error while deleting file:", error);
+        return null;
+    }
+}
+
+export { uploadOnCloudinary, deletedOnCloudinary }

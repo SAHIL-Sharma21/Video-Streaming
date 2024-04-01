@@ -29,6 +29,7 @@ app.use(cookieParser());
 //writing our routes here
 //segreting the code importing the useerrouter here
 import userRouter from './routes/user.route.js';
+import videoRouter from './routes/video.route.js';
 
 //router ko hm bahar nikl kr le gye hia toh hm log middleware ka use kr rahe hai app.use(route, router import varible);
 //routes decleration >> best practice is to use middleware to use router
@@ -36,6 +37,7 @@ import userRouter from './routes/user.route.js';
 //the url will look like this-->> http://localhost:8080/users/register
 app.use("/api/v1/users", userRouter); //this is as standard practice used in industires
 //url will look like this -> http://localhost:8080/api/v1/users/register 
+app.use("/api/v1/videos", videoRouter);
 
 // app.get("/", (req, res) => {
 //     res.send("Hello backend");
