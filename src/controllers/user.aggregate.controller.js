@@ -125,9 +125,21 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                                 {
                                     $project: {
                                         fullname: 1,
+                                        userName: 1,
+                                        avatar: 1
                                     }
                                 }
                             ]
+                        }
+                    },
+                    //writing one more pipeline to give better data as astructure otherwise in owner field we will get array and we have access it by 0th index
+                    {
+                        $addFields: {
+                            //owner -->> existing field hi modify kr rahe hai
+                            //this is give the first element in the owner array
+                            owner: {
+                                $first: "$owner" //here we can also user ArrayElementAt method
+                            }
                         }
                     }
                 ]
@@ -136,7 +148,9 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     ]);
 
 
-
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user[0].watchHistory, "Watch history fetched successfully!"));
 });
 
 
