@@ -1,9 +1,10 @@
 //comments model
 
 import mongoose, { Schema } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2"; //pagination wala feature laane ke liye kyuyki comments and videos bahut saare nhui dilha skte.
 
 
-const commentsSchema = new Schema(
+const commentSchema = new Schema(
     {
         content: {
             type: String,
@@ -11,16 +12,15 @@ const commentsSchema = new Schema(
         },
         video: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "videos",
-            required: true
+            ref: "Video",
         },
         owner: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "users"
+            ref: "User"
         }
     },
     { timestamps: true }
 );
 
-
-export const Comment = mongoose.model("Comment", commentsSchema);
+commentSchema.plugin(mongooseAggregatePaginate);
+export const Comment = mongoose.model("Comment", commentSchema);

@@ -16,12 +16,12 @@ const playlistSchema = new Schema(
         videos: [
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "videos"
+                ref: "Video"
             }
         ],
         owner: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "users"
+            ref: "User"
         }
     },
     { timestamps: true }

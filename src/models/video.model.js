@@ -39,6 +39,6 @@ const videoSchema = new Schema(
     }, { timestamps: true });
 
 //we can write our own plugin >> this aggregation is used to write complex querries
-videoSchema.plugin(mongooseAggregatePaginate);
+videoSchema.plugin(mongooseAggregatePaginate); //zada kaam nhi hai bs video dega kha se kah tk dene hai aur kitne dene hai and next pass kr dega
 
 export const Video = mongoose.model('Video', videoSchema);
