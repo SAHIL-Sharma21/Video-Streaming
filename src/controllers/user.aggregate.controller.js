@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from '../models/user.model.js'
+import mongoose from "mongoose";
 
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
@@ -24,7 +25,9 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
         //find the user in 1st pipeline
         { //this will match the userName and return the name
-            $match: userName?.toLoweCase() //checking username is there and usko lowercase mei kr de rahe hai.
+            $match: {
+                userName: userName?.toLowerCase(),
+            },  //checking username is there and usko lowercase mei kr de rahe hai.
         }, // hmare pass abhi 1 document hai after putting match operator.
         //2nd pipeline mei uske subscribers kitne ke channel ke through
         { //first pipeline >> from subscriptions to localfield to _id and forigen field channel ko chipka denge.
@@ -102,7 +105,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
         {
             //getting the user from below pipeline
             $match: {
-                _id: new Types.ObjectId(req.user._id) //this will convert to mongodb id and will match with our database 
+                _id: new mongoose.Types.ObjectId(req.user._id) //this will convert to mongodb id and will match with our database 
             } // yaha pr id match ho gya document ke hissab se
         },
         //below pipeline mei user collection mei bahut saare video ke id aa gye hai -- >> left join kr diya hai.

@@ -9,7 +9,16 @@ const videoRouter = Router();
 
 
 videoRouter.route("/upload-video").post(verifyJWT, upload.fields(
-    []
+    [
+        {
+            name: "videoFile",
+            maxCount: 1
+        },
+        {
+            name: "videoThumbnail",
+            maxCount: 1
+        }
+    ]
 ), uploadVideo);
 
 

@@ -118,8 +118,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     //we have use the middleware and verify the jwt and added user to req then we have th user obj in out req
     await User.findByIdAndUpdate(req.user._id,
         {
-            $set: {
-                refreshToken: undefined,
+            $unset: {
+                refreshToken: 1, //passing flag 1 and it will remove the refresh token
             }
         },
         {
@@ -185,17 +185,17 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             secure: true
         }
 
-        const { accessToken, newRefreshToken } = await accessAndRefreshToken(user._id);
+        const { accessToken, refreshToken } = await accessAndRefreshToken(user._id);
 
         //sending response
         return res
             .status(200)
             .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", newRefreshToken, options)
+            .cookie("refreshToken", refreshToken, options)
             .json(
                 new ApiResponse(
                     200,
-                    { accessToken, refreshToken: newRefreshToken },
+                    { accessToken, refreshToken: refreshToken },
                     "Access Token Refreshed."
                 )
             )
@@ -324,12 +324,17 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     //logic for updatingthe coverImage
     //getting the path from req.file
 
+
     const coverImageLocalPath = req.file?.path;
 
     if (!coverImageLocalPath) {
         throw new ApiError(400, "CoverImage is missing.")
     }
 
+    const removedCoverImage = await deletedOnCloudinary(req.user?.coverImage);
+    console.log(removedCoverImage);
+    // console.log(req.user?.coverImage);
+    // console.log(removedCoverImage);
     //if we get the local file path through multer
     const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 

@@ -46,7 +46,7 @@ router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateAvatar);
 router.route("/cover-image").patch(verifyJWT, upload.single("coverImage"), updateCoverImage);
 
 //using params to get username for making route for getinguserProfile
-router.route("/c/:username").get(verifyJWT, getUserChannelProfile);
+router.route("/c/:userName").get(verifyJWT, getUserChannelProfile);
 //getting watch history
 router.route("/history").get(verifyJWT, getWatchHistory);
 
