@@ -52,8 +52,6 @@ app.use("api/v1/healthcheck", healthCheckRouter);
 app.use("api/v1/dashboard", dashboardRouter);
 app.use("api/v1/comment", commentRouter);
 
-
-
 // app.get("/", (req, res) => {
 //     res.send("Hello backend");
 // });
