@@ -50,7 +50,7 @@ const deletedOnCloudinary = async (fileUrl) => {
 
 
         const response = await cloudinary.uploader.destroy(matchedId[1], {
-            resource_type: 'image'
+            resource_type: 'auto'
         });
         return response;
     } catch (error) {
