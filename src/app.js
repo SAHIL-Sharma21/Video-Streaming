@@ -28,9 +28,15 @@ app.use(cookieParser());
 
 //writing our routes here
 //segreting the code importing the useerrouter here
-import userRouter from './routes/user.route.js';
-import videoRouter from './routes/video.route.js';
-
+import userRouter from './routes/user.routes.js';
+import videoRouter from './routes/video.routes.js';
+import tweetrouter from './routes/tweet.routes.js'
+import subscriptionRouter from './routes/subscription.routes.js'
+import playlistRouter from './routes/playlist.routes.js'
+import likeRouter from './routes/like.routes.js'
+import healthCheckRouter from './routes/healthcheck.routes.js';
+import dashboardRouter from './routes/dashboard.routes.js';
+import commentRouter from './routes/comment.routes.js'
 //router ko hm bahar nikl kr le gye hia toh hm log middleware ka use kr rahe hai app.use(route, router import varible);
 //routes decleration >> best practice is to use middleware to use router
 // app.use("/users", userRouter); // we only need to write this once then we can use our router. this is basic but we are writing our api jo we need to write api
@@ -38,6 +44,15 @@ import videoRouter from './routes/video.route.js';
 app.use("/api/v1/users", userRouter); //this is as standard practice used in industires
 //url will look like this -> http://localhost:8080/api/v1/users/register 
 app.use("/api/v1/videos", videoRouter);
+app.use("/api/v1/tweets", tweetrouter);
+app.use("api/v1/subscriptions", subscriptionRouter);
+app.use("/api/v1/playlist", playlistRouter);
+app.use("/api/v1/like", likeRouter);
+app.use("api/v1/healthcheck", healthCheckRouter);
+app.use("api/v1/dashboard", dashboardRouter);
+app.use("api/v1/comment", commentRouter);
+
+
 
 // app.get("/", (req, res) => {
 //     res.send("Hello backend");
