@@ -2,7 +2,7 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Video } from "../models/video.model.js"
-import { User } from '../models/user.model.js'
+// import { User } from '../models/user.model.js'
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { deletedOnCloudinary, uploadOnCloudinary } from '../utils/cloudnaryService.js'
@@ -12,7 +12,77 @@ import { deletedOnCloudinary, uploadOnCloudinary } from '../utils/cloudnaryServi
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
     //TODO: get all videos based on query, sort, pagination
+
+    if (!userId || !isValidObjectId(req.user?._id)) return new ApiError(400, "UserId is invalid")
+    // const user = await User.findById(userId);
+    // console.log(user);
+    //parsing the page and limit to numbers as in query it will comt in string
+    // Parspage = parseInt(page, 10);
+    // limit = parseInt(limit, 10);
+    const parsedPage = parseInt(page, 10);
+    const parsedLimit = parseInt(limit, 10);
+    let pipeline = [];
+
+
+    let options = {
+        page: parsedPage,
+        limit: parsedLimit
+    }
+
+    pipeline.push({
+        $match: {
+            owner: new mongoose.Types.ObjectId(userId),
+        }
+    })
+
+    //match videos by query
+    if (!query) new ApiError(400, "Query is required.")
+    pipeline.push({
+        $match: {
+            $text: {
+                $search: query,
+            }
+        }
+    })
+
+
+    const sortCriteria = {};
+    //if sortBy and sortType is present then in sortcriteria assign the sort type and check if asccendin or decending
+    if (sortBy && sortType) {
+        sortCriteria[sortBy] = sortType === "asc" ? 1 : -1;
+        //pushing in our pipelne
+        pipeline.push({
+            $sort: sortCriteria,
+        })
+    } else {
+        sortCriteria["createdAt"] = -1;
+        pipeline.push({
+            $sort: sortCriteria,
+        })
+    }
+
+    //applying pagination
+    pipeline.push({
+        $skip: (parsedPage - 1) * parsedLimit,
+    });
+    pipeline.push(
+        {
+            $limit: parsedLimit
+        }
+    )
+
+    // const videoPipeline = await Video.aggregate(pipeline);
+
+    const allVideos = await Video.aggregatePaginate(pipeline, options)
+
+    if (!allVideos || allVideos.docs.length === 0) throw new ApiError(400, "No video found.");
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, allVideos, "videos fetched successfully!"));
 });
+
+
 
 const publishVideo = asyncHandler(async (req, res) => {
     //publish a video
