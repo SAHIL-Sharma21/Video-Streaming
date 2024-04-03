@@ -48,9 +48,9 @@ const deletedOnCloudinary = async (fileUrl) => {
         if (!(matchedId && matchedId[0])) return null;
         console.log(matchedId[1]);
 
-
+        // const resourceType = fileUrl.includes('video') ? 'video' : 'image';
         const response = await cloudinary.uploader.destroy(matchedId[1], {
-            resource_type: 'auto'
+            resource_type: 'image'
         });
         return response;
     } catch (error) {

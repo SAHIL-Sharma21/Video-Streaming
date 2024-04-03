@@ -135,11 +135,19 @@ const updateVideo = asyncHandler(async (req, res) => {
     if (!title || !description) throw new ApiError(400, "title and description are required to update.");
 
 
+
     //checking new thumbnail file is ther
     const newThumbnaiLocalPath = req.file?.path;
     if (!newThumbnaiLocalPath) return new ApiError(401, "thumbnail image is required.")
 
     //TODO: for deleteoncloudinary use db.findone method
+    //deleting old thumbnail inmage on cloudinary.
+    const oldVideo = await Video.findOne({ _id: videoId });
+    // console.log(oldVideo);
+    if (!oldVideo.thumbnail) return null;
+    const result = await deletedOnCloudinary(oldVideo?.thumbnail);
+    // console.log(result);
+
 
     //upload on cloudinary
     const newThumbnail = await uploadOnCloudinary(newThumbnaiLocalPath);
@@ -184,6 +192,45 @@ const deleteVideo = asyncHandler(async (req, res) => {
 const togglePublishStatus = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //todo: toggle publish
+    //checking user and video id matched
+    if (!videoId && !isValidObjectId(req.user?._id)) return new ApiError(401, "you dont have pwermission to toggle the video");
+    // console.log("execution is here.");
+
+    const pipeline = await Video.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(videoId)
+            }
+        },
+        {
+            $addFields: {
+                isPublished: {
+                    $not: "$isPublished"
+                }
+            }
+        }
+    ]);
+
+    //checking 
+    const isPublished = pipeline.length !== 0 ? pipeline[0].isPublished : null;
+
+    const togglePublishStatus = await Video.findByIdAndUpdate(
+        videoId,
+        {
+            $set: {
+                isPublished: isPublished,
+            }
+        },
+        { new: true }
+    ).select(" -createdAt -updatedAt -duration -videoFile -description")
+
+    // console.log(toggleStatus[0].isPublished);
+    if (!togglePublishStatus) return new ApiError(400, "Video status did not changed.");
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, togglePublishStatus, "Video status toggled successfully!"));
+
 });
 
 

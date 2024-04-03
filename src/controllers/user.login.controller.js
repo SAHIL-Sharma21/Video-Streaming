@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import jwt from 'jsonwebtoken'
 import { deletedOnCloudinary, uploadOnCloudinary } from '../utils/cloudnaryService.js'
-import { deleteOldAvatarImage } from '../utils/deleteOldAvatarImage.js';
+
 
 //making one method to generate access token and refresh token
 //this userId we will get from the user which we have find from the DB
