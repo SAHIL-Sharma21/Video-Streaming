@@ -9,6 +9,7 @@ import {
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 
 const router = Router();
+//router.use is a middleware and passing verifyJWT token and in req obj we are assigning user
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
 router.route("/").post(createTweet);
