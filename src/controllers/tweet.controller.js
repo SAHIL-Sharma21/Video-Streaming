@@ -69,8 +69,9 @@ const getUserTweet = asyncHandler(async (req, res) => {
                 as: "user"
             }
         },
+        //extracting user field as lookup alyways returns an array if there is only one element 
         {
-            $addFields: {
+            $addFields: { //addfiel will add user field to each document when there is more document then it will show.
                 user: {
                     $arrayElemAt: ["$user", 0] //extracting the user field as it is array and taking its 0th index value which is our user object
                 }
@@ -95,11 +96,46 @@ const getUserTweet = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(200, getUserTweet[0], "User Tweet fetched successfully!"));
+        .json(new ApiResponse(200, getUserTweet, "User Tweet fetched successfully!"));
 });
 
 const updateTweet = asyncHandler(async (req, res) => {
     //TODO: update tweet
+    const { content } = req.body;
+    //lets assume user passing tweetid in params
+    const { tweetId } = req.params
+
+    if (!content || !tweetId) {
+        throw new ApiError(401, "content and tweetId are required!");
+    }
+
+    const user = await User.findById(req.user?._id);
+    const tweetDocument = await Tweet.findById(tweetId);
+
+    //checking the owner and tweet id as it will be given by same user
+    if (user._id.toString() !== tweetDocument.owner.toString()) {
+        throw new ApiError(401, "You don't have permission to edit this tweet.")
+    }
+
+    //now updating the tweet
+    const updatedTweeet = await Tweet.findByIdAndUpdate(
+        tweetId,
+        {
+            $set: {
+                content,
+            }
+        },
+        { new: true }
+    );
+
+    //check if tweet is not updated
+    if (!updatedTweeet) {
+        throw new ApiError(400, "Error while updating tweet.")
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, updatedTweeet, "Tweet updated successfully!"));
 });
 
 const deletetweet = asyncHandler(async (req, res) => {
