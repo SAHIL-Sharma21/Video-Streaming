@@ -140,6 +140,32 @@ const updateTweet = asyncHandler(async (req, res) => {
 
 const deletetweet = asyncHandler(async (req, res) => {
     //TODO: delete tweet
+    const { tweetId } = req.params
+
+    //if tweet id is not provided then throw error
+    if (!tweetId) {
+        throw new ApiError(401, "Please provide the tweet id");
+    }
+
+    const tweetDocument = await Tweet.findById(tweetId);
+    //checking the right owner/user he can delete the tweet
+    if (tweetDocument.owner.toString() !== req.user?._id.toString()) {
+        throw new ApiError(401, "You are not allowed to delete the tweet.")
+    }
+
+    //now user can delete the twet
+    const deletedTweet = await Tweet.findByIdAndDelete(
+        tweetId,
+        { new: true }
+    );
+
+    if (!deletedTweet) {
+        throw new ApiError(500, "Error while deleting Tweet.")
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Tweet deleted successfully!"));
 });
 
 export { createTweet, getUserTweet, updateTweet, deletetweet }
