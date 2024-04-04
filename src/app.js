@@ -45,12 +45,12 @@ app.use("/api/v1/users", userRouter); //this is as standard practice used in ind
 //url will look like this -> http://localhost:8080/api/v1/users/register 
 app.use("/api/v1/videos", videoRouter);
 app.use("/api/v1/tweets", tweetrouter);
-app.use("api/v1/subscriptions", subscriptionRouter);
-app.use("/api/v1/playlist", playlistRouter);
-app.use("/api/v1/like", likeRouter);
-app.use("api/v1/healthcheck", healthCheckRouter);
-app.use("api/v1/dashboard", dashboardRouter);
-app.use("api/v1/comment", commentRouter);
+app.use("/api/v1/subscriptions", subscriptionRouter);
+app.use("/api/v1/playlists", playlistRouter);
+app.use("/api/v1/likes", likeRouter);
+app.use("/api/v1/healthcheck", healthCheckRouter);
+app.use("/api/v1/dashboard", dashboardRouter);
+app.use("/api/v1/comments", commentRouter);
 
 // app.get("/", (req, res) => {
 //     res.send("Hello backend");
