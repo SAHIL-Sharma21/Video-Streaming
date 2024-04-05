@@ -4,6 +4,7 @@ import { Playlist } from "../models/playlist.model.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
+import { Video } from "../models/video.model.js"
 
 
 const createPlaylist = asyncHandler(async (req, res) => {
@@ -114,18 +115,110 @@ const getPlaylistById = asyncHandler(async (req, res) => {
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
     const { playlistId, videoId } = req.params
+
+    //writing contoller to add video to a playlist
+    //checking if there is playlistId and video id is provided
+
+    if (!playlistId || !videoId) {
+        throw new ApiError(400, "Playlist Id and VideoId is required to add video to playlist");
+    }
+
+    const playlist = await Playlist.findById(playlistId);
+    //finding video also by its id
+    const video = await Video.findById(videoId);
+
+    //checking if the user is the right owner of it or not
+    if (playlist?.owner.toString() !== req.user?._id.toString()) {
+        throw new ApiError(400, "You are not authorize to add a video to a playlist");
+    }
+
+    //also checkingif video is published or not.
+    if (video?.isPublished !== true) {
+        throw new ApiError(400, "Video is unPublished you canot add into your playlist.")
+    }
+
+    //if videoid is already exist in that array then we cannot add
+    if (playlist?.videos.includes(videoId)) {
+        throw new ApiError(400, "video already exisits.");
+    }
+    // const addedVideoToPlaylist = await Playlist.updateOne(
+    //     {
+    //         _id: new mongoose.Types.ObjectId(playlistId),
+    //     },
+    //     {
+    //         $push: {
+    //             videos: videoId,
+    //         }
+    //     }
+    // );
+    const addedVideoToPlaylist = await Playlist.findByIdAndUpdate(
+        playlistId,
+        {
+            $push: {
+                videos: videoId,
+            }
+        },
+        { new: true }
+    );
+
+    //above both code is correct can use any apprach
+    if (!addedVideoToPlaylist) {
+        throw new ApiError(500, "Error while adding video to playlist.")
+    };
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, addedVideoToPlaylist, "Video added to playlist successfully!"));
+
 })
 
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     const { playlistId, videoId } = req.params
     // TODO: remove video from playlist
+    //removind the video from the playlist
+    //checking the playlistId and videoId is provided.
+
+    if (!playlistId || !videoId) {
+        throw new ApiError(400, "Playlist Id and video ID is requried.");
+    }
+
+    console.log("exe is here");
+
 
 })
 
 const deletePlaylist = asyncHandler(async (req, res) => {
     const { playlistId } = req.params
     // TODO: delete playlist
-})
+    //deleting the todo
+    //checking if playlist id is present or not
+
+    if (!playlistId) {
+        throw new ApiError(400, "playlist id is required to delete the playlist.")
+    }
+
+    //findind playlist by its id
+    const playlist = await Playlist.findById(playlistId);
+
+    //checking the owner and playlist of the same user
+    if (!isValidObjectId(req.user?._id)) {
+        throw new ApiError(400, "user id is not correct.")
+    }
+
+    if (playlist?.owner.toString() !== req.user?._id.toString()) {
+        throw new ApiError(400, "You are not authorized to delete the playlist");
+    }
+    //here we get the same user
+    const deletedPlaylist = await Playlist.findByIdAndDelete(playlistId, { new: true });
+
+    if (!deletedPlaylist) {
+        throw new ApiError(500, "Error while deleting the playlist");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "playlist deleted successfully!"));
+});
 
 const updatePlaylist = asyncHandler(async (req, res) => {
     const { playlistId } = req.params
@@ -145,6 +238,10 @@ const updatePlaylist = asyncHandler(async (req, res) => {
 
     if (!playlist) {
         throw new ApiError(400, "Can't find the playlist with the given playlist id");
+    }
+
+    if (!isValidObjectId(req.user?._id)) {
+        throw new ApiError(400, "user id is not correct.")
     }
 
     //if playlist id in db and user provided playlist id does not match then throw error.
