@@ -94,6 +94,22 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 const getPlaylistById = asyncHandler(async (req, res) => {
     const { playlistId } = req.params
     //TODO: get playlist by id
+
+    //controller for getting the playlist by the playlist id
+    if (!playlistId) {
+        throw new ApiError(400, "Playlist id is required");
+    }
+
+    //finding the playlist by its id
+    const playlistById = await Playlist.findById(playlistId).select(" -createdAt -updatedAt");
+
+    if (!playlistById) {
+        throw new ApiError(400, "Playlist is not there with the given Playlist Id.")
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, playlistById, "Playlist fetched successfully!"));
 })
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
@@ -115,7 +131,50 @@ const updatePlaylist = asyncHandler(async (req, res) => {
     const { playlistId } = req.params
     const { name, description } = req.body
     //TODO: update playlist
-})
+    //updating a playlist with the correct owner
+    if (!playlistId) {
+        throw new ApiError(400, "playlist id is required.")
+    }
+
+    if (!name || !description) {
+        throw new ApiError(400, "name and description is required to update the playlist.");
+    }
+
+    //finding the playlist but its id
+    const playlist = await Playlist.findById(playlistId);
+
+    if (!playlist) {
+        throw new ApiError(400, "Can't find the playlist with the given playlist id");
+    }
+
+    //if playlist id in db and user provided playlist id does not match then throw error.
+    if (playlist?._id.toString() !== playlistId) {
+        throw new ApiError(400, "playlistId is invalid");
+    }
+    //checking the playlist owner if he is the right owner then he can edit the playlist
+    if (playlist?.owner.toString() !== req.user?._id.toString()) {
+        throw new ApiError(400, "You are not authorize to update this playlist.")
+    }
+
+    const updatedPlaylist = await Playlist.findByIdAndUpdate(
+        playlistId,
+        {
+            $set: {
+                name,
+                description,
+            }
+        },
+        { new: true }
+    );
+
+    if (!updatedPlaylist) {
+        throw new ApiError(500, "Error while updating the playlist.")
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, updatedPlaylist, "Playlist updated successfuly."));
+});
 
 export {
     createPlaylist,
