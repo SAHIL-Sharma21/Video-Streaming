@@ -182,10 +182,36 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Playlist Id and video ID is requried.");
     }
 
-    console.log("exe is here");
+    const playlist = await Playlist.findById(playlistId);
+    const video = await Video.findById(videoId);
 
+    //checking for the rightr owner of the playlist
+    if (playlist?.owner.toString() !== req.user?._id.toString()) {
+        throw new ApiError(400, "You are not authorized.");
+    }
 
-})
+    if (!playlist?.videos.includes(videoId)) {
+        throw new ApiError(400, "Video does not exist in the playlist.");
+    }
+    // //if user is correct then he can remove the video from the playlist
+    const removeVideoToPlaylist = await Playlist.findByIdAndUpdate(
+        playlistId,
+        {
+            $pull: {
+                videos: videoId,
+            }
+        },
+        { new: true }
+    );
+
+    if (!removeVideoToPlaylist) {
+        throw new ApiError(500, "Error while removing the video from the playlist.");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, removeVideoToPlaylist, "Video removed from playlist successfully."));
+});
 
 const deletePlaylist = asyncHandler(async (req, res) => {
     const { playlistId } = req.params
