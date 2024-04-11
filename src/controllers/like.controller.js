@@ -174,9 +174,58 @@ const getLikedVideos = asyncHandler(async (req, res) => {
         throw new ApiError(401, "You are not authorized!");
     }
 
+    const likedVideo = await Like.aggregate([
+        {
+            $match: {
+                likedBy: new mongoose.Types.ObjectId(req.user?._id),
+            }
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "video",
+                foreignField: "_id",
+                as: "VideoDetails",
+            }
+        },
+        {
+            $unwind: "$VideoDetails"
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "VideoDetails.owner",
+                foreignField: "_id",
+                as: "videoOwner"
+            }
+        },
+        {
+            $unwind: "$videoOwner"
+        },
+        {
+            $project: {
+                likedBy: 1,
+                VideoDetails: {
+                    videoFile: 1,
+                    title: 1,
+                    thumbnail: 1
+                },
+                videoOwner: {
+                    username: 1,
+                    fullname: 1,
+                    avatar: 1
+                }
+            }
+        },
+    ]);
 
+    if (!likedVideo || likedVideo.length === 0) {
+        throw new ApiError(400, "No liked video found.");
+    }
 
-    console.log("exe is here!");
+    return res
+        .status(200)
+        .json(new ApiResponse(200, likedVideo, "Liked video fetched successfully!"))
 
 });
 
