@@ -75,19 +75,110 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     if (!isValidObjectId(req.user?._id)) {
         throw new ApiError(401, "You are not authorize.")
     }
-    console.log("exe is here");
 
-})
+    //checking if the commentis already liked or not
+    const commentLike = await Like.findOne({
+        comment: commentId,
+        likedBy: req.user?._id,
+    });
+
+    //cheking if comment like is already present or not if present then we wil create the like otherwise dislike the comment
+    if (!commentLike) {
+        try {
+            //if comment like is not there then will create the comment like
+            const commentLiked = await Like.create({
+                comment: commentId,
+                likedBy: req.user?._id
+            });
+
+            return res
+                .status(201)
+                .json(new ApiResponse(200, commentLiked, "Comment liked Successfully!"));
+        } catch (error) {
+            throw new ApiError(500, "Error while liking the comment!")
+        }
+    } else {
+        //if commentlike is already there then we will delte the existinglike.
+        try {
+            //if comment is already liked then we will dislike it making delete in database entry.
+            const dislikedComment = await Like.findOneAndDelete({
+                comment: commentId,
+                likedBy: req.user?._id
+            });
+            return res
+                .status(201)
+                .json(new ApiResponse(200, dislikedComment, "Comment disliked successfully!"));
+        } catch (error) {
+            throw new ApiError(500, "Error while disliking the comment.")
+        }
+    }
+});
 
 const toggleTweetLike = asyncHandler(async (req, res) => {
     const { tweetId } = req.params
     //TODO: toggle like on tweet
-}
-)
+
+    //toggling tweet like if like is not there then we will cretae one tweet like otherwise dislike it
+
+    if (!tweetId) {
+        throw new ApiError(401, "tweet Id is required!");
+    }
+
+    //checking for the user
+    if (!isValidObjectId(req.user?._id)) {
+        throw new ApiError(401, "You are not authorized!");
+    }
+
+    //find the tweet lke if its already present then will dislike otherwise will cfreate the like
+    const tweetLike = await Like.findOne({
+        tweet: tweetId,
+        likedBy: req.user?._id
+    });
+
+    if (!tweetLike) {
+        try {
+            //if tweet like is not there then will create the new like
+            const tweetLiked = await Like.create({
+                tweet: tweetId,
+                likedBy: req.user?._id
+            });
+            return res
+                .status(201)
+                .json(new ApiResponse(200, tweetLiked, "Tweet liked successfully!"));
+        } catch (error) {
+            throw new ApiError(500, "Error while liking the tweet!");
+        }
+    } else {
+        try {
+            //if tweet is already liked then will delete the tweet like.
+            const dislikeTweet = await Like.findOneAndDelete({
+                tweet: tweetId,
+                likedBy: req.user?._id
+            });
+
+            return res
+                .status(201)
+                .json(new ApiResponse(200, dislikeTweet, "Disliked the tweet successfully!"));
+        } catch (error) {
+            throw new ApiError(500, "Error while disliking the tweet!");
+        }
+    }
+});
 
 const getLikedVideos = asyncHandler(async (req, res) => {
     //TODO: get all liked videos
-})
+
+    //controller for getting all liked videos by users.
+
+    if (!isValidObjectId(req.user?._id)) {
+        throw new ApiError(401, "You are not authorized!");
+    }
+
+
+
+    console.log("exe is here!");
+
+});
 
 export {
     toggleCommentLike,
