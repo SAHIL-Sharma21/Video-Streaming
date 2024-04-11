@@ -13,7 +13,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
         //request has access to cookies due to middleware
         //mobile se cookie shayad n aaye to  kys pta custom header bej raha hai 
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", ""); //here we are doing if req.header(auth) is there then we have to replace Bearer keyword wtith empty string as we get Bearer <Access token> from the header
-        console.log(token);
+        // console.log(token);
 
         //if token is not there then through error
         if (!token) {
