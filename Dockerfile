@@ -1,14 +1,14 @@
 #dockerixzing our youtube backend
 
-FROM node:18
+FROM node
 
 
 #makiong working directory
 WORKDIR /app
 
 #copy package json file
-COPY package.json .
-COPY package-lock.json .
+COPY package.json ./
+COPY package-lock.json ./
 
 RUN npm install
 
