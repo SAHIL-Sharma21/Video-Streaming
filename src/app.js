@@ -52,8 +52,12 @@ app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
 app.use("/api/v1/comments", commentRouter);
 
+// app.get("/", (req, res) => {
+//     res.send("Hello backend");
+// });
+
 app.get("/", (req, res) => {
-    res.send("Hello backend");
+    return res.status(200).json({ message: "Server is fine and running on desired port." })
 });
 
 export { app }
