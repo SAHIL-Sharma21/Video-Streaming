@@ -2,7 +2,8 @@
 import express from 'express';
 import cookieParser from 'cookie-parser'; //importing cookieparser here 
 import cors from 'cors'; //importing cors 
-
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
 
@@ -12,6 +13,11 @@ app.use(cors({
     credentials: true
 }));
 
+//for serving static html file
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, '../');
+
 //accpeting json into our server and implementing using middleware from express.json
 app.use(express.json({ limit: "20kb" })); //giving limit to 20kb to  accpet json in our app 
 
@@ -19,12 +25,12 @@ app.use(express.json({ limit: "20kb" })); //giving limit to 20kb to  accpet json
 app.use(express.urlencoded({ extended: true, limit: "20kb" }));
 
 //for storing /serving static file we have to use static into our middlewares
-app.use(express.static("public"));
+// app.use(express.static("public"));
 
 //using cookie parser
 app.use(cookieParser());
 
-
+app.use(express.static(path.join(rootDir, 'public')));
 
 //writing our routes here
 //segreting the code importing the useerrouter here
@@ -56,8 +62,12 @@ app.use("/api/v1/comments", commentRouter);
 //     res.send("Hello backend");
 // });
 
+// app.get("/", (req, res) => {
+//     return res.status(200).json({ message: "Server is fine and running on desired port." })
+// });
+
 app.get("/", (req, res) => {
-    return res.status(200).json({ message: "Server is fine and running on desired port." })
+    return res.sendFile(path.join(rootDir, 'public', 'frontend', 'index.html'));
 });
 
 export { app }

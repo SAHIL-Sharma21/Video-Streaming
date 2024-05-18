@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Stream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#121212] ">
+    <div class="container mx-auto p-4 text-white flex flex-col items-center">
+        <h1 class="text-4xl font-bold mb-4">Welcome to Video streaming server</h1>
+        <p class="text-lg">All the REST API's Endpoints Here</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Card 1 -->
+            <div class="max-w-md rounded overflow-hidden shadow-lg bg-gray-800 mx-2 my-2">
+                <div class="px-6 py-4">
+                    <div class="font-bold text-xl mb-2">Users routes</div>
+                    <ul>
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>user register - {domain}/users/register</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <!-- Other list items -->
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>login user - {domain}/users/login</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>logout user - {domain}/users/logout</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>change password - {domain}/users/change-password</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>verify token - {domain}/users/refresh-token</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get current user - {domain}/users/current-user</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get user channel details - {domain}/users/c/:userName </span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get watch history - {domain}/users/history </span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>
+                        <li class="bg-purple-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>update Cover Image - {domain}/users/cover-image </span>
+                            <span class="font-bold text-black">PATCH</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="max-w-sm rounded overflow-hidden shadow-lg bg-gray-800 mx-2 my-2">
+                <div class="px-6 py-4">
+                    <div class="font-bold text-xl mb-2">Video Routes</div>
+                    <ul>
+                        <!-- Video route list items -->
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>Publish a video - {domain}/videos/</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get video by id - /videos/:videoId</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>
+                        <li class="bg-purple-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>update a video - {domain}/videos/:videoId</span>
+                            <span class="font-bold text-black">PATCH</span>
+                        </li>
+                        <li class="bg-red-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>delete a video  - {domain}/videos/:videoId</span>
+                            <span class="font-bold text-black">DELETE</span>
+                        </li>
+                        <li class="bg-purple-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>Toggle publish status - {domain}/videos/toggle/publish/:videoId</span>
+                            <span class="font-bold text-black">PATCH</span>
+                        </li>
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get all video - {domain}/videos/?userId=userId&page=1&limit=10</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="max-w-sm rounded overflow-hidden shadow-lg bg-gray-800 mx-2 my-2">
+                <div class="px-6 py-4">
+                    <div class="font-bold text-xl mb-2">Tweets</div>
+                    <ul>
+                        <!-- Tweets route list items -->
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>Get user Tweets - {domain}/tweets/user/:userId</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>create tweets - {domain}/tweets/</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <li class="bg-purple-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>update user tweet - {domain}/tweets/:tweetId</span>
+                            <span class="font-bold text-black">PATCH</span>
+                        </li>
+                        <li class="bg-red-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>delete user tweet  - {domain}/tweets/:tweetId</span>
+                            <span class="font-bold text-black">DELETE</span>
+                        </li>  
+                    </ul>
+                </div>
+            </div>
+            <!-- Card 4 -->
+            <div class="max-w-sm rounded overflow-hidden shadow-lg bg-gray-800 mx-2 my-2">
+                <div class="px-6 py-4">
+                    <div class="font-bold text-xl mb-2">Comments</div>
+                    <ul>
+                        <!-- Comments route list items -->
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>Add comment to video- {domain}/comments/:videoId</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <li class="bg-purple-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>update comment - {domain}/comments/c/:commentId</span>
+                            <span class="font-bold text-black">PATCH</span>
+                        </li>
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get video comment - {domain}/comments/:videoId</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>
+                        <li class="bg-red-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>delete video comment - {domain}/comments/c/:commentId</span>
+                            <span class="font-bold text-black">DELETE</span>
+                        </li> 
+                    </ul>
+                </div>
+            </div>
+            <!-- Card 5 -->
+            <div class="max-w-sm rounded overflow-hidden shadow-lg bg-gray-800 mx-2 my-2">
+                <div class="px-6 py-4">
+                    <div class="font-bold text-xl mb-2">Playlist</div>
+                    <ul>
+                        <!-- Playlist route list items -->
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>create Playlist- {domain}/playlists/</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get user playlist - {domain}/playlists/user/:userId</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get playlist by id - {domain}/playlists/:playlistId</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>
+                        <li class="bg-purple-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>update user playlist- {domain}/playlists/:userId</span>
+                            <span class="font-bold text-black">PATCH</span>
+                        </li> 
+                        <li class="bg-purple-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>delete user playlist - {domain}/playlists/:playlistId</span>
+                            <span class="font-bold text-black">DELETE</span>
+                        </li>
+                        <li class="bg-purple-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>Add video to playlist- {domain}/playlists/add/:videoId/:playlistId</span>
+                            <span class="font-bold text-black">PATCH</span>
+                        </li> 
+                        <li class="bg-purple-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>Remove video to playlist- {domain}/playlists/remove/:videoId/:playlistId</span>
+                            <span class="font-bold text-black">PATCH</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Card 6 -->
+            <div class="max-w-sm rounded overflow-hidden shadow-lg bg-gray-800 mx-2 my-2">
+                <div class="px-6 py-4">
+                    <div class="font-bold text-xl mb-2">Subscription</div>
+                    <ul>
+                        <!-- Subscription route list items -->
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>toggle subscription - {domain}/subscriptions/u/:channelId</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get user channel subscriber - {domain}/subscriptions/u/:channelId</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get subscribed channel - {domain}/subscriptions/c/:subcriberId</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li> 
+                    </ul>
+                </div>
+            </div>
+            <!-- Card 7 -->
+            <div class="max-w-sm rounded overflow-hidden shadow-lg bg-gray-800 mx-2 my-2">
+                <div class="px-6 py-4">
+                    <div class="font-bold text-xl mb-2">Like</div>
+                    <ul>
+                        <!-- Like route list items -->
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>toggle video like - {domain}/likes/toggle/v/:videoId</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>toggle comment liker - {domain}/likes/toggle/c/:commentId</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>
+                        <li class="bg-yellow-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>toggle tweet like - {domain}/likes/toggle/t/:tweetId</span>
+                            <span class="font-bold text-black">POST</span>
+                        </li>  
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get user liked video - {domain}/likes/videos</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Card 8 -->
+            <div class="max-w-sm rounded overflow-hidden shadow-lg bg-gray-800 mx-2 my-2">
+                <div class="px-6 py-4">
+                    <div class="font-bold text-xl mb-2">Dashboard</div>
+                    <ul>
+                        <!-- Dashboard route list items -->
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get channel dashboard - {domain}/dashboard/stats</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>     
+                        <li class="bg-green-500 rounded px-4 py-2 mb-2 flex items-center justify-between">
+                            <span>get channel videos - {domain}/dashboard/videos</span>
+                            <span class="font-bold text-black">GET</span>
+                        </li>   
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
