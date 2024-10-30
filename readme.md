@@ -54,22 +54,63 @@ This project is a Backend setup for a youtube like video streaming application, 
 ### API Endpoints
 
 1. **Users**
+    - Register: **POST** ``/users/register``
+    - Login:  **POST** ``/users/login``
+    - Logout: **POST** ``/users/logout``
+    - Refresh Token: **POST** ``/users/refresh-token``
+    - Current User: **GET** ``/users/current-user``
+    - Update Account Details: **PATCH** ``/users/update-account``
+    - Update Avatar: **PATCH** ``/users/avatar``
+    - Update Cover Image: **PATCH** ``/users/cover-image``
+    - Get User Profile: **GET** ``/users/c/:userName``
+    - GET Watch History: **GET** ``/users/history``
 
-    ```bash
-        Register: POST /users/register
-        Login:  POST /users/login
-        Logout: POST /users/logout
-        Refresh Token: POST /users/refresh-token
-        Current User: GET /users/current-user
-        Update Account Details: PATCH /users/update-account
-        Update Avatar: PATCH /users/avatar
-        Update Cover Image: PATCH /users/cover-image
-        Get User Profile: GET /users/c/:userName
-        GET /users/c/:userName
-        GET /users/history
-    ```
+2. **Videos**
+    - Get all Videos: **GET** ``/videos``
+    - Post Video: **POST** ``/videos``
+    - Get Video by ID: **GET** ``/videos/:videoId``
+    - Update Video: **PATCH** ``/videos/:videoId``
+    - Delete Video: **DELETE** ``/videos/:videoId``
+    - Toggle Publish Status: **PATCH** ``/videos/toggle/publish/:videoId``
 
+3. **Tweets**
+    - Create Tweet: **POST** ``/tweets``
+    - Get User Tweet: **GET** ``/tweets/user/:userId``
+    - update Tweet: **PATCH** ``/tweets/:tweetId``
+    - Delete Tweet: **DELETE** ``/tweets/:tweetId``
 
+4. **Subscriptions**
+    - Get Subscribed Channel: **GET** ``/subscriptions/c/:subcriberId``
+    - Toggle Subscribe: **POST** ``/subscriptions/u/:channelId``
+    - Get Channel Subscribers: **GET** ``/subscriptions/u/:channelId``
+
+5. **Playlists**
+    - Create Playlist: **POST** ``/playlists``
+    - Get Playlist By Id: **GET** ``/playlists/:playlistId``
+    - Update Playlist: **PATCH** ``/playlists/:playlistId``
+    - Delete Playlist: **DELETE** ``/playlists/:playlistId``
+    - Add Video to Playlist: **PATCH** ``/playlists/add/:videoId/:playlistId``
+    - Remove Video from Playlist: **PATCH** ``/playlists/remove/:videoId/:playlistId``
+    - Get User Playlists: **GET** ``/playlists/user/:userId``
+
+6. **Likes**
+    - Toggle Video Like: **POST** ``/likes/toggle/v/:videoId``
+    - Toggle Comment Like: **POST** ``/likes/toggle/c/:commentId``
+    - Toggle Tweet Like: **POST** ``/likes/toggle/t/:tweetId``
+    - Get Liked Video: **GET** ``/likes/videos``
+
+7. **Dashboard**
+    - Get Channel Stats: **GET** ``/dashboard/stats``
+    - Get Channel Videos: **GET** ``/dashboard/videos``
+
+8. **Comments**
+    - Get Video Comments: **GET** ``/comments/:videoId``
+    - Add Comment: **POST** ``/comments/:videoId``
+    - Update Comment: **PATCH** ``/comments/c/:commentId``
+    - Delete Comment: **DELETE** ``/comments/c/:commentId``
+
+9. **Healthcheck**
+    - Get HealthCheck: **GET** ``/healthcheck``
 
 
 ## Contribution
